@@ -13,26 +13,18 @@ public class Player {
     
     
     public int move(int[][] B) {
-        return 1;
-        /*
-         int m = 0;
-         for(int c = 0; c < 8; c++) {
-         m = move(B, c, 1);
-         if( m == 1 )
-         return c;
-         }
-         
-         return 5;
-         */
+         return moveHelper(B, 10, 5);
     }
     
     private int eval(int[][] B, int player) {
         int other = 0;
         if( player == 1 ) {
             other = 10;
-        } else {
+        }
+        else {
             other = 1;
         }
+        
         if(checkWin(B, player)) {
             return 1;
         } else if(checkWin(B, other)) {
@@ -48,8 +40,8 @@ public class Player {
     private int moveHelper(int[][] B, int player, int depth) {
         
         // Base case
-        if(depth == 1) {
-            return 0; // eval(B);
+        if(depth == 0) {
+            return eval(B, player);
         }
         // This keeps track of the high score
         int highScore = 0;
@@ -60,22 +52,67 @@ public class Player {
                 if(col != 0) {
                     continue;
                 }
+                
                 // Make a move here
+                B[i][j] = player;
+                
                 int moveResult = moveHelper(B, player, --depth);
+                
                 if(moveResult > highScore) {
                     // Update high score
                     highScore = moveResult;
                 }
-                // Delete the move here
-                return col;
                 
+                // Delete the move here
+                B[i][j] = 0;
+                
+                return col;
             }
         }
-        return 0; // Just to get it to compile
+        
+        return 0; // Return shit (think ascii and mod...)
     }
     
-    public boolean checkWin(int[][] B, int player) {
-        return true;   
+    // check for win by player, 4 in a sequence
+    private static boolean checkWin(int[][] B, int player) {    // 1 = player, 10 = machine
+        
+        // check all horizontal rows
+        for(int i = 0; i < 8; ++i)
+            for(int j = 0; j < 5; ++j) {
+            if(B[i][j] == player && B[i][j+1] == player && B[i][j+2] == player && B[i][j+3] == player) {
+                return true;
+            }
+        }
+        
+        
+        // check all vertical columns
+        for(int i = 0; i < 5; ++i)
+            for(int j = 0; j < 8; ++j) {
+            if(B[i][j] == player && B[i+1][j] == player && B[i+2][j] == player && B[i+3][j] == player) {
+                return true;
+            }
+        } 
+        
+        
+        // check all lower-left to upper-right diagonals
+        for(int i = 3; i < 8; ++i)
+            for(int j = 0; j < 5; ++j) {
+            
+            if(B[i][j] == player && B[i-1][j+1] == player && B[i-2][j+2] == player && B[i-3][j+3] == player) {
+                return true;
+            }  
+        }   
+        
+        
+        // check all upper-left to lower-right diagonals
+        for(int i = 0; i < 5; ++i)
+            for(int j = 0; j < 5; ++j) {
+            if(B[i][j] == player && B[i+1][j+1] == player && B[i+2][j+2] == player && B[i+3][j+3] == player) {
+                return true;
+            }
+        }
+        
+        return false;  
     }
     
 }
