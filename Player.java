@@ -11,6 +11,7 @@ public class Player {
     
     private Random R = new Random(); 
     
+
     public int move(int[][] B) {
         int m = 0;
         for(int c = 0; c < 8; c++) {
@@ -45,9 +46,42 @@ public class Player {
             for(int j = 0; j < 5; ++j) {
             if(B[i][j] == player && B[i][j+1] == player && B[i][j+2] == player && B[i][j+3] == player) {
                 return true;
+
+    // Skeleton moveHelper method -- doesn't do 
+    // anything too sensible just yet
+    // 1 = human, 10 = machine
+    private int moveHelper(int[][] B, int player, int depth) {
+        
+        // Base case
+        if(depth == 1) {
+            return 0; // eval(B);
+        }
+        // This keeps track of the high score
+        int highScore = 0;
+        for(int i = 0; i < B.length; i++) {
+            for(int j = 0; j < i; j++) {
+                int col = B[i][j];
+                // If the column is full
+                if(col != 0) {
+                    continue;
+                }
+                // Make a move here
+                int moveResult = moveHelper(B, player, --depth);
+                if(moveResult > highScore) {
+                    // Update high score
+                    highScore = moveResult;
+                }
+                // Delete the move here
+                return col;
+
             }
         }
+        return 0; // Just to get it to compile
+    }
+    
+    public int move(int[][] B) {
         
+
         // check all vertical columns
         for(int i = 0; i < 5; ++i)
             for(int j = 0; j < 8; ++j) {
@@ -73,7 +107,13 @@ public class Player {
                 return true;
             }
         }
+
+        int m = 0;
+        do {
+            m = R.nextInt(8);
+        } while(B[0][m] != 0);
+
         
-        // no wins found
-        return false;  
-    }
+        return m;
+    }   
+}
