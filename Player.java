@@ -1,7 +1,7 @@
 /* Title:  Player.java
  * Authors: Tyrone Hou <tyroneh@bu.edu>
  *          Dharmesh Tarapore <dharmesh@bu.edu> 
- * Date: 11/29/13
+ * Date: 04/29/15
  * Purpose: This is a simple random player provided as part of the code distribution for HW 08 for CS 112, Fall 2014
  */
 
