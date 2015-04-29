@@ -8,7 +8,10 @@
 import java.util.*; 
 
 public class Player {
-
+    
+    private Random R = new Random(); 
+    
+    
     public int move(int[][] B) {
         return 1;
         /*
@@ -50,8 +53,8 @@ public class Player {
         }
         // This keeps track of the high score
         int highScore = 0;
-        for(int i = 0; i < B.length; i++) {
-            for(int j = 0; j < i; j++) {
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
                 int col = B[i][j];
                 // If the column is full
                 if(col != 0) {
@@ -71,45 +74,8 @@ public class Player {
         return 0; // Just to get it to compile
     }
     
-    private static boolean checkWin(int[][] B, int player) {    // 1 = player, 10 = machine
-        
-        // check all horizontal rows
-        for(int i = 0; i < 8; ++i)
-            for(int j = 0; j < 5; ++j) {
-            if(B[i][j] == player && B[i][j+1] == player && B[i][j+2] == player && B[i][j+3] == player) {
-                return true;
-            }
-        }
-        
-        
-        // check all vertical columns
-        for(int i = 0; i < 5; ++i)
-            for(int j = 0; j < 8; ++j) {
-            if(B[i][j] == player && B[i+1][j] == player && B[i+2][j] == player && B[i+3][j] == player) {
-                return true;
-            }
-        } 
-        
-        
-        // check all lower-left to upper-right diagonals
-        for(int i = 3; i < 8; ++i)
-            for(int j = 0; j < 5; ++j) {
-            
-            if(B[i][j] == player && B[i-1][j+1] == player && B[i-2][j+2] == player && B[i-3][j+3] == player) {
-                return true;
-            }  
-        }   
-        
-        
-        // check all upper-left to lower-right diagonals
-        for(int i = 0; i < 5; ++i)
-            for(int j = 0; j < 5; ++j) {
-            if(B[i][j] == player && B[i+1][j+1] == player && B[i+2][j+2] == player && B[i+3][j+3] == player) {
-                return true;
-            }
-        }
-        
-        return false;  
+    public boolean checkWin(int[][] B, int player) {
+        return true;   
     }
     
 }
