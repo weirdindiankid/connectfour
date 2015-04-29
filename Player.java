@@ -8,9 +8,7 @@
 import java.util.*; 
 
 public class Player {
-    
-    private Random R = new Random(); 
-    
+    final int HUMAN = 1, MACHINE = 10;
     
     public int move(int[][] B) {
          return moveHelper(B, 10, 5);
@@ -18,11 +16,11 @@ public class Player {
     
     private int eval(int[][] B, int player) {
         int other = 0;
-        if( player == 1 ) {
-            other = 10;
+        if( player == HUMAN ) {
+            other = MACHINE;
         }
         else {
-            other = 1;
+            other = HUMAN;
         }
         
         if(checkWin(B, player)) {
@@ -56,7 +54,10 @@ public class Player {
                 // Make a move here
                 B[i][j] = player;
                 
-                int moveResult = moveHelper(B, player, --depth);
+                int other_player = 0;
+                other_player = (player == HUMAN) ? MACHINE : HUMAN;
+                
+                int moveResult = moveHelper(B, other_player, --depth);
                 
                 if(moveResult > highScore) {
                     // Update high score
