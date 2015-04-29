@@ -2,7 +2,7 @@
  * Authors: Tyrone Hou <tyroneh@bu.edu>
  *          Dharmesh Tarapore <dharmesh@bu.edu> 
  * Date: 04/29/15
- * Purpose: This is a simple random player provided as part of the code distribution for HW 08 for CS 112, Fall 2014
+ * Purpose: This is a simple Connect4 AI
  */
 
 import java.util.*; 
@@ -59,15 +59,14 @@ public class Player {
                 
                 int moveResult = moveHelper(B, other_player, --depth);
                 
-                if(moveResult > highScore) {
-                    // Update high score
-                    highScore = moveResult;
-                }
-                
                 // Delete the move here
                 B[i][j] = 0;
                 
-                return col;
+                if(moveResult == -1 || moveResult == 1) {
+                    return col;
+                }
+                
+
             }
         }
         
