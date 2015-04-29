@@ -1,5 +1,6 @@
 /* Title:  Connect4.java
- * Author: Wayne Snyder (waysnyder@gmail.com)
+ * Authors: Tyrone Hou
+ *          Dharmesh Tarapore <dharmesh@bu.edu>
  * Date: 4/19/12
  * Purpose: This is a driver program for a Connect4 program for CS 112
  * Uses: method move() from class Player

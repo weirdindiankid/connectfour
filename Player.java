@@ -1,5 +1,6 @@
 /* Title:  Player.java
- * Author: Wayne Snyder (waysnyder@gmail.com)
+ * Authors: Tyrone Hou <tyroneh@bu.edu>
+ *          Dharmesh Tarapore <dharmesh@bu.edu> 
  * Date: 11/29/13
  * Purpose: This is a simple random player provided as part of the code distribution for HW 08 for CS 112, Fall 2014
  */
