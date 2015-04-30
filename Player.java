@@ -14,7 +14,8 @@ public class Player {
     int [] scores = new int[8];
     
     public int move(int[][] B) {
-        return moveHelper(B, MACHINE, 2);
+        //System.out.println("\t\t\t\t\t\tmove");
+        return moveHelper(B, MACHINE, 5);
     }
     
     private static boolean colFull(int[][] B, int col) {
@@ -50,63 +51,60 @@ public class Player {
     private int[] getScores(int[][] B, int player, int depth) {
         int other;
         if( player == HUMAN ) {
+            //System.out.println("HUMAN");
             other = MACHINE;
         }
         else {
+            //System.out.println("MACHINE");
             other = HUMAN;
         }
         
+
         int[] colScore = new int[8];
-        System.out.println(depth);
         for(int i = 0; i < 8; i++) {
             //System.out.println(i);
             if( colFull(B, i) ) {
-                colScore[i] = 0;
+                colScore[i] = -1;
             }
             else if(checkWin(B, MACHINE)) {
                 //System.out.println("Machine win");
                 colScore[i] = 100;
             } else if(checkWin(B, HUMAN)) {
-                System.out.println("Human win");
+                //System.out.println("Human win");
                 colScore[i] = -100;
             } else if(depth == 0) {
                 //System.out.println("Depth zero");
-                colScore[i] = 50;
+                colScore[i] = 0;
             } else if (player == MACHINE) {
                 //System.out.println("Machine turn");
                 addChecker(B, i, player);
                 int[] humanScores = getScores(B, other, depth - 1);
-                System.out.print("humanScores = ");
-                printArray(humanScores);
-                colScore[i] = max( humanScores );
+                //System.out.println(depth);
+                //System.out.print("humanScores = ");
+                //printArray(humanScores);
+                colScore[i] = min( humanScores );
                 removeChecker(B, i);
-            } else {
+            } else { // player == HUMAN
                 //System.out.println("User turn");
                 addChecker(B, i, player);
                 int [] machineScores = getScores(B, other, depth - 1);
-                System.out.print("machineScores = ");
-                printArray(machineScores);
-                colScore[i] = min( getScores(B, other, depth - 1) );
+                //System.out.println(depth);
+                //System.out.print("machineScores = ");
+                //printArray(machineScores);
+                colScore[i] = max( machineScores );
                 removeChecker(B, i);
             }
             
         }
-        //System.out.print("depth: " + depth + "colScore: ");
-        /*System.out.print("[");
-        for(int i = 1; i < scores.length; i++) {
-            System.out.print(scores[i] + " ");
-        }
-        System.out.println("]");*/
+
         return colScore;
     }
     
     private int min(int [] a) {
         int minimum = a[0];
-        int minimum_index = 0;
         for(int i = 1; i < a.length; i++) {
-            if(a[i] < minimum) {
+            if(a[i] < minimum && a[i] != -1) {
                 minimum = a[i];
-                minimum_index = i;
             }
         }
         return minimum;
@@ -117,7 +115,7 @@ public class Player {
         int maximum = a[0];
         int maximum_index = 0;
         for(int i = 1; i < a.length; i++) {
-            if(a[i] > maximum) {
+            if(a[i] > maximum && a[i] != -1) {
                 maximum = a[i];
                 maximum_index = i;
             }
@@ -142,11 +140,7 @@ public class Player {
     // 1 = human, 10 = machine
     private int moveHelper(int[][] B, int player, int depth) {
         scores = getScores(B, player, depth);
-        System.out.print("[");
-        for(int i = 1; i < scores.length; i++) {
-            System.out.print(scores[i] + " ");
-        }
-        System.out.println("]");
+        //printArray(scores);
         int maxScore = maxIndex(scores);
         return maxScore;
         
@@ -205,6 +199,6 @@ public class Player {
         Player P = new Player();
         int[] T = {1, 2, -1, 4};
         
-        System.out.println(P.max(T));
+        System.out.println(P.min(T));
     }
 }
