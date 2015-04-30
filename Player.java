@@ -11,11 +11,11 @@ public class Player {
     final int HUMAN = 1, MACHINE = 10;
     
     public int move(int[][] B) {
-         return moveHelper(B, 10, 5);
+        return moveHelper(B, MACHINE, 5);
     }
-    
-    private int eval(int[][] B, int player) {
-        int other = 0;
+
+    private int getScore(int[][] B, int player, int depth, int col) {
+        int other;
         if( player == HUMAN ) {
             other = MACHINE;
         }
@@ -27,8 +27,21 @@ public class Player {
             return 1;
         } else if(checkWin(B, other)) {
             return -1;
-        } else { // here the board is neither a win or a loss
+        } else if(depth == 0) {
             return 0;
+        } else {
+            int row = 0;
+            while(row < 8 && B[row][col] == 0) {
+                ++row;
+            }
+            --row;
+            
+            B[row][col] = player;
+            for(int i = 0; i < 8; i++) {
+                int score = getScore(B, other, depth - 1, i);
+            }
+            B[row][col] = 0;
+            return score;
         }
     }
     
@@ -37,38 +50,42 @@ public class Player {
     // 1 = human, 10 = machine
     private int moveHelper(int[][] B, int player, int depth) {
         
-        // Base case
+        // Base cases
         if(depth == 0) {
             return eval(B, player);
         }
         // This keeps track of the high score
-        int highScore = 0;
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                int col = B[i][j];
-                // If the column is full
-                if(col != 0) {
-                    continue;
-                }
-                
-                // Make a move here
-                B[i][j] = player;
-                
-                int other_player = 0;
-                other_player = (player == HUMAN) ? MACHINE : HUMAN;
-                
-                int moveResult = moveHelper(B, other_player, --depth);
-                
-                // Delete the move here
-                B[i][j] = 0;
-                
-                if(moveResult == -1 || moveResult == 1) {
-                    return col;
-                }
-                
-
+        for(int j = 0; j < 8; j++) {
+            
+            // If the column is full
+            if(B[0][j] != 0) {
+                System.out.println("Column full, B[0][j] = " + B[0][j]);
+                continue;
+            }
+            
+            // Make a move here
+            int r = 0;
+            while(r < 8 && B[r][j] == 0) {
+                ++r;
+            }
+            
+            --r;
+            
+            B[r][j] = player;
+            
+            int other_player = 0;
+            other_player = (player == HUMAN) ? MACHINE : HUMAN;
+            
+            int moveResult = moveHelper(B, other_player, depth - 1);
+            
+            // Delete the move here
+            B[r][j] = 0;
+            
+            if(moveResult == -1 || moveResult == 1) {
+                return j;
             }
         }
+        
         
         return 0; // Return shit (think ascii and mod...)
     }
