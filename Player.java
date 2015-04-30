@@ -9,13 +9,45 @@ import java.util.*;
 
 public class Player {
     final int HUMAN = 1, MACHINE = 10;
+    
     // Scores array
     int [] scores = new int[8];
+    
     public int move(int[][] B) {
-        return moveHelper(B, MACHINE, 5);
+        return moveHelper(B, MACHINE, 2);
     }
-
-    private int getScore(int[][] B, int player, int depth, int col) {
+    
+    private static boolean colFull(int[][] B, int col) {
+        return B[0][col] != 0;
+    }
+    
+    private static boolean colEmpty(int[][] B, int col) {
+        return B[7][col] == 0;
+    }
+    
+    private static void addChecker(int[][] B, int col, int player) {
+        int row = 0;
+        while(row < 8 && B[row][col] == 0) {
+            ++row;
+        }
+        --row;
+        
+        B[row][col] = player;
+        //System.out.println("add B[" + row + "][" + col + "] = " + B[row][col]);
+    }
+    
+    private static void removeChecker(int[][] B, int col) {
+        int row = 7;
+        while(row >= 0 && B[row][col] != 0) {
+            --row;
+        }
+        ++row;
+        
+        B[row][col] = 0;
+        //System.out.println("remove B[" + row + "][" + col + "] = " + B[row][col]);
+    }
+    
+    private int[] getScores(int[][] B, int player, int depth) {
         int other;
         if( player == HUMAN ) {
             other = MACHINE;
@@ -24,33 +56,79 @@ public class Player {
             other = HUMAN;
         }
         
-        if(checkWin(B, player)) {
-            return 1;
-        } else if(checkWin(B, other)) {
-            return -1;
-        } else if(depth == 0) {
-            return 0;
-        } else {
-            int row = 0;
-            while(row < 8 && B[row][col] == 0) {
-                ++row;
+        int[] colScore = new int[8];
+        System.out.println(depth);
+        for(int i = 0; i < 8; i++) {
+            //System.out.println(i);
+            if( colFull(B, i) ) {
+                colScore[i] = 0;
             }
-            --row;
+            else if(checkWin(B, MACHINE)) {
+                //System.out.println("Machine win");
+                colScore[i] = 100;
+            } else if(checkWin(B, HUMAN)) {
+                System.out.println("Human win");
+                colScore[i] = -100;
+            } else if(depth == 0) {
+                //System.out.println("Depth zero");
+                colScore[i] = 50;
+            } else if (player == MACHINE) {
+                //System.out.println("Machine turn");
+                addChecker(B, i, player);
+                int[] humanScores = getScores(B, other, depth - 1);
+                System.out.print("humanScores = ");
+                printArray(humanScores);
+                colScore[i] = max( humanScores );
+                removeChecker(B, i);
+            } else {
+                //System.out.println("User turn");
+                addChecker(B, i, player);
+                int [] machineScores = getScores(B, other, depth - 1);
+                System.out.print("machineScores = ");
+                printArray(machineScores);
+                colScore[i] = min( getScores(B, other, depth - 1) );
+                removeChecker(B, i);
+            }
             
-            B[row][col] = player;
-            for(int i = 0; i < 8; i++) {
-                int score = getScore(B, other, depth - 1, i);
-            }
-            B[row][col] = 0;
-            return score;
         }
+        //System.out.print("depth: " + depth + "colScore: ");
+        /*System.out.print("[");
+        for(int i = 1; i < scores.length; i++) {
+            System.out.print(scores[i] + " ");
+        }
+        System.out.println("]");*/
+        return colScore;
+    }
+    
+    private int min(int [] a) {
+        int minimum = a[0];
+        int minimum_index = 0;
+        for(int i = 1; i < a.length; i++) {
+            if(a[i] < minimum) {
+                minimum = a[i];
+                minimum_index = i;
+            }
+        }
+        return minimum;
     }
     
     // Max method for array score
     private int max(int [] a) {
-        int maximum = 0;
+        int maximum = a[0];
         int maximum_index = 0;
-        for(int i = 0; i < a.length; i++) {
+        for(int i = 1; i < a.length; i++) {
+            if(a[i] > maximum) {
+                maximum = a[i];
+                maximum_index = i;
+            }
+        }
+        return maximum;
+    }
+    
+    private int maxIndex(int [] a) {
+        int maximum = a[0];
+        int maximum_index = 0;
+        for(int i = 1; i < a.length; i++) {
             if(a[i] > maximum) {
                 maximum = a[i];
                 maximum_index = i;
@@ -58,19 +136,20 @@ public class Player {
         }
         return maximum_index;
     }
+    
     // Skeleton moveHelper method -- doesn't do 
     // anything too sensible just yet
     // 1 = human, 10 = machine
     private int moveHelper(int[][] B, int player, int depth) {
-
-        // For each column, get score
-        for(int i = 0; i < 8; i++) {
-            scores[i] = getScore(B, player, depth, i);
+        scores = getScores(B, player, depth);
+        System.out.print("[");
+        for(int i = 1; i < scores.length; i++) {
+            System.out.print(scores[i] + " ");
         }
-        // Get max score
-        int maxScore = max(scores);
+        System.out.println("]");
+        int maxScore = maxIndex(scores);
         return maxScore;
-
+        
     }
     
     // check for win by player, 4 in a sequence
@@ -115,4 +194,17 @@ public class Player {
         return false;  
     }
     
+    private void printArray(int[] A) {
+       System.out.print("[");
+       for(int i = 0; i < A.length; i++) {
+           System.out.print(A[i] + " ");
+       }
+       System.out.println("]");
+    }
+    public static void main(String[] args) {
+        Player P = new Player();
+        int[] T = {1, 2, -1, 4};
+        
+        System.out.println(P.max(T));
+    }
 }
