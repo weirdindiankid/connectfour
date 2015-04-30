@@ -9,7 +9,8 @@ import java.util.*;
 
 public class Player {
     final int HUMAN = 1, MACHINE = 10;
-    
+    // Scores array
+    int [] scores = new int[8];
     public int move(int[][] B) {
         return moveHelper(B, MACHINE, 5);
     }
@@ -45,49 +46,31 @@ public class Player {
         }
     }
     
+    // Max method for array score
+    private int max(int [] a) {
+        int maximum = 0;
+        int maximum_index = 0;
+        for(int i = 0; i < a.length; i++) {
+            if(a[i] > maximum) {
+                maximum = a[i];
+                maximum_index = i;
+            }
+        }
+        return maximum_index;
+    }
     // Skeleton moveHelper method -- doesn't do 
     // anything too sensible just yet
     // 1 = human, 10 = machine
     private int moveHelper(int[][] B, int player, int depth) {
-        
-        // Base cases
-        if(depth == 0) {
-            return eval(B, player);
+
+        // For each column, get score
+        for(int i = 0; i < 8; i++) {
+            scores[i] = getScore(B, player, depth, i);
         }
-        // This keeps track of the high score
-        for(int j = 0; j < 8; j++) {
-            
-            // If the column is full
-            if(B[0][j] != 0) {
-                System.out.println("Column full, B[0][j] = " + B[0][j]);
-                continue;
-            }
-            
-            // Make a move here
-            int r = 0;
-            while(r < 8 && B[r][j] == 0) {
-                ++r;
-            }
-            
-            --r;
-            
-            B[r][j] = player;
-            
-            int other_player = 0;
-            other_player = (player == HUMAN) ? MACHINE : HUMAN;
-            
-            int moveResult = moveHelper(B, other_player, depth - 1);
-            
-            // Delete the move here
-            B[r][j] = 0;
-            
-            if(moveResult == -1 || moveResult == 1) {
-                return j;
-            }
-        }
-        
-        
-        return 0; // Return shit (think ascii and mod...)
+        // Get max score
+        int maxScore = max(scores);
+        return maxScore;
+
     }
     
     // check for win by player, 4 in a sequence
