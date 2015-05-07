@@ -56,8 +56,8 @@ public class Player {
     }
     
     private static void removeChecker(int[][] B, int col) {
-        int row = 8;
-        while(row > 0 && B[row][col] != 0) {
+        int row = 7;
+        while(row >= 0 && B[row][col] != 0) {
             --row;
         }
         ++row;
@@ -71,8 +71,9 @@ public class Player {
         while(col >= 0 && B[row][col] != 0) {
             --col;
         }
-        ++col;
-        
+        ++col; 
+        //if(col >= 8) { col = 7;}
+        //System.out.println("Row is: " + row + "Col is: " + col);
         B[row][col] = 0;
         //System.out.println("remove B[" + row + "][" + col + "] = " + B[row][col]);
     }
