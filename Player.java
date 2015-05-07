@@ -1,6 +1,7 @@
 /* Title:  Player.java
- * Author: Wayne Snyder (waysnyder@gmail.com)
- * Date: 11/29/13
+ * Authors: Dharmesh Tarapore <dharmesh@bu.edu>
+ *          Tyrone Hou <tyroneh@bu.edu>
+ * Date: 5/6/15
  * Purpose: This is a simple random player provided as part of the code distribution for HW 08 for CS 112, Fall 2014
  */
 
@@ -97,8 +98,10 @@ public class Player {
         return 0; // needed to compile
     }
     
-    private int getScoresDiagonally(int a, int b, int c, int d) {
     
+    // Still buggy, need to add all diagonals
+    private int getScoresDiagonally(int a, int b, int c, int d) {
+        
         int n = a + b + c + d;
         int scoreMachine = n / 10;
         int scoreHuman = n % 10;
@@ -111,6 +114,7 @@ public class Player {
         return 0; // needed to compile
         
     }
+    
     // The magic method
     private int eval(int[][] B) {
         
@@ -149,43 +153,35 @@ public class Player {
         return sum;
     }
     
-    private int column(int move) {
-        return move % 8;
-    }
-    
-    private int row(int move) {
-        return move / 8;    
-    }
-    
-    // This move helper method will do all the heavy lifting
+    // This implements the MinMax search
     private int minMax(int[][] B, int depth, int alpha, int beta) {
         //System.out.println("Minmax called");
         if(isLeaf(B) || depth == D)
             return eval(B);
         else if(depth % 2 == 0) {
-             int val = -Inf;
-             
-             for(int c = 0; c < 8; c++) {
-                 int row = 0;
-                 if(B[row][c] != Blank)
-                     continue; 
-                 while(row < 8 && B[row][c] == 0) {
-                     ++row;
-                 } 
-                 --row;
-                 B[row][c] = Machine;
-                 alpha = Math.max(alpha, val);
-                 if(beta < alpha) {
-                     B[row][c] = Blank;
-                     break;
-                 }
-                 val = Math.max(val, minMax(B, depth + 1, alpha, beta));
-                 B[row][c] = Blank;
-                 
-             }
-             
-             return val;
-             
+            int val = -Inf;
+            
+            for(int c = 0; c < 8; c++) {
+                int row = 0;
+                if(B[row][c] != Blank)
+                    continue; 
+                while(row < 8 && B[row][c] == 0) {
+                    ++row;
+                } 
+                --row;
+                B[row][c] = Machine;
+                alpha = Math.max(alpha, val);
+                if(beta < alpha) {
+                    B[row][c] = Blank;
+                    break;
+                }
+                val = Math.max(val, minMax(B, depth + 1, alpha, beta));
+                B[row][c] = Blank;
+                
+            }
+            
+            return val;
+            
         } else {
             
             int val = Inf;
@@ -200,21 +196,21 @@ public class Player {
                     //System.out.println("Row is: " + row);
                 } 
                 --row;
-                 B[row][c] = Human;
-                 beta = Math.min(beta, val);
-                 if(beta < alpha) {
-                     B[row][c] = Blank;
-                     break;
-                 }
-                 val = Math.min( val, minMax(B, depth + 1, alpha, beta)); 
-                 B[row][c] = Blank;       // undo the move and try next move    
-                 
+                B[row][c] = Human;
+                beta = Math.min(beta, val);
+                if(beta < alpha) {
+                    B[row][c] = Blank;
+                    break;
+                }
+                val = Math.min( val, minMax(B, depth + 1, alpha, beta)); 
+                B[row][c] = Blank;       // undo the move and try next move    
+                
             }
             
             return val; 
         }
     }
-        
+    
     
     public int move(int[][] B) {
         
@@ -231,7 +227,7 @@ public class Player {
             }
             --row;
             //System.out.println("Now on: B[" + r + "][" + c + "]");
-                 
+            
             B[row][c] = Machine;
             int val = minMax(B, 1, -Inf, Inf);
             //System.out.println("Val is: " + val);
@@ -244,17 +240,27 @@ public class Player {
             
         }
         
+        // This is a temporary fix for the array index out of bounds error
+        if(bestMove < 0) {
+            System.out.println("Triggered bestMove = -1");
+            int m = 0; 
+            do {
+                m = R.nextInt(8);
+            } while(B[0][m] != 0);
+            
+            return m;
+        }
         return bestMove;
     }  
-        /*
-        int m = 0; 
-        do {
-            m = R.nextInt(8);
-        } while(B[0][m] != 0);
-        
-        return m; 
-    }
-    */
+    /*
+     int m = 0; 
+     do {
+     m = R.nextInt(8);
+     } while(B[0][m] != 0);
+     
+     return m; 
+     }
+     */
     
 }
 
