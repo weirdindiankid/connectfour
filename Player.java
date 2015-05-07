@@ -234,7 +234,7 @@ public class Player {
                  
             B[row][c] = Machine;
             int val = minMax(B, 1, -Inf, Inf);
-            System.out.println("Val is: " + val);
+            //System.out.println("Val is: " + val);
             if(val > max) {
                 bestMove = c;  
                 max = val;
