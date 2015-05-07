@@ -1,153 +1,30 @@
 /* Title:  Player.java
- * Authors: Tyrone Hou <tyroneh@bu.edu>
- *          Dharmesh Tarapore <dharmesh@bu.edu> 
- * Date: 04/29/15
- * Purpose: This is a simple Connect4 AI
+ * Author: Wayne Snyder (waysnyder@gmail.com)
+ * Date: 11/29/13
+ * Purpose: This is a simple random player provided as part of the code distribution for HW 08 for CS 112, Fall 2014
  */
 
 import java.util.*; 
 
 public class Player {
-    final int HUMAN = 1, MACHINE = 10;
     
-    // Scores array
-    int [] scores = new int[8];
+    private Random R = new Random(); 
     
-    public int move(int[][] B) {
-        //System.out.println("\t\t\t\t\t\tmove");
-        return moveHelper(B, MACHINE, 5);
-    }
+    // Constants
+    private final int Human = 1;
+    private final int Machine = 10;
+    private final int Blank = 0;
     
-    private static boolean colFull(int[][] B, int col) {
-        return B[0][col] != 0;
-    }
+    // We will use this to represent Infinity
+    private final int Inf = 1000000;
     
-    private static boolean colEmpty(int[][] B, int col) {
-        return B[7][col] == 0;
-    }
+    // This will be the depth our program will look up to
+    private final int D = 9;
     
-    private static void addChecker(int[][] B, int col, int player) {
-        int row = 0;
-        while(row < 8 && B[row][col] == 0) {
-            ++row;
-        }
-        --row;
-        
-        B[row][col] = player;
-        //System.out.println("add B[" + row + "][" + col + "] = " + B[row][col]);
-    }
+    // Method borrowed from Connect4.java, code by Professor Snyder
+    // Check to see if the game is a win for the given player
     
-    private static void removeChecker(int[][] B, int col) {
-        int row = 7;
-        while(row >= 0 && B[row][col] != 0) {
-            --row;
-        }
-        ++row;
-        
-        B[row][col] = 0;
-        //System.out.println("remove B[" + row + "][" + col + "] = " + B[row][col]);
-    }
-    
-    private int[] getScores(int[][] B, int player, int depth) {
-        int other;
-        if( player == HUMAN ) {
-            //System.out.println("HUMAN");
-            other = MACHINE;
-        }
-        else {
-            //System.out.println("MACHINE");
-            other = HUMAN;
-        }
-        
-
-        int[] colScore = new int[8];
-        for(int i = 0; i < 8; i++) {
-            //System.out.println(i);
-            if( colFull(B, i) ) {
-                colScore[i] = -1;
-            }
-            else if(checkWin(B, MACHINE)) {
-                //System.out.println("Machine win");
-                colScore[i] = 100;
-            } else if(checkWin(B, HUMAN)) {
-                //System.out.println("Human win");
-                colScore[i] = -100;
-            } else if(depth == 0) {
-                //System.out.println("Depth zero");
-                colScore[i] = 0;
-            } else if (player == MACHINE) {
-                //System.out.println("Machine turn");
-                addChecker(B, i, player);
-                int[] humanScores = getScores(B, other, depth - 1);
-                //System.out.println(depth);
-                //System.out.print("humanScores = ");
-                //printArray(humanScores);
-                colScore[i] = min( humanScores );
-                removeChecker(B, i);
-            } else { // player == HUMAN
-                //System.out.println("User turn");
-                addChecker(B, i, player);
-                int [] machineScores = getScores(B, other, depth - 1);
-                //System.out.println(depth);
-                //System.out.print("machineScores = ");
-                //printArray(machineScores);
-                colScore[i] = max( machineScores );
-                removeChecker(B, i);
-            }
-            
-        }
-
-        return colScore;
-    }
-    
-    private int min(int [] a) {
-        int minimum = a[0];
-        for(int i = 1; i < a.length; i++) {
-            if(a[i] < minimum && a[i] != -1) {
-                minimum = a[i];
-            }
-        }
-        return minimum;
-    }
-    
-    // Max method for array score
-    private int max(int [] a) {
-        int maximum = a[0];
-        int maximum_index = 0;
-        for(int i = 1; i < a.length; i++) {
-            if(a[i] > maximum && a[i] != -1) {
-                maximum = a[i];
-                maximum_index = i;
-            }
-        }
-        return maximum;
-    }
-    
-    private int maxIndex(int [] a) {
-        int maximum = a[0];
-        int maximum_index = 0;
-        for(int i = 1; i < a.length; i++) {
-            if(a[i] > maximum) {
-                maximum = a[i];
-                maximum_index = i;
-            }
-        }
-        return maximum_index;
-    }
-    
-    // Skeleton moveHelper method -- doesn't do 
-    // anything too sensible just yet
-    // 1 = human, 10 = machine
-    private int moveHelper(int[][] B, int player, int depth) {
-        scores = getScores(B, player, depth);
-        //printArray(scores);
-        int maxScore = maxIndex(scores);
-        return maxScore;
-        
-    }
-    
-    // check for win by player, 4 in a sequence
-    private static boolean checkWin(int[][] B, int player) {    // 1 = player, 10 = machine
+    private static boolean isWinFor(int[][] B, int player) {    // 1 = player, 10 = machine
         
         // check all horizontal rows
         for(int i = 0; i < 8; ++i)
@@ -188,17 +65,168 @@ public class Player {
         return false;  
     }
     
-    private void printArray(int[] A) {
-       System.out.print("[");
-       for(int i = 0; i < A.length; i++) {
-           System.out.print(A[i] + " ");
-       }
-       System.out.println("]");
-    }
-    public static void main(String[] args) {
-        Player P = new Player();
-        int[] T = {1, 2, -1, 4};
+    // This method checks if the given node is a leaf node
+    // Code borrowed from the TicTacToe file on the CS112 website
+    private boolean isLeaf(int[][] B) {
         
-        System.out.println(P.min(T));
+        if(isWinFor(B, Human) || isWinFor(B, Machine)) {
+            return true;
+        }
+        for(int row = 0; row < 8; row++) {
+            for(int col = 0; col < 8; col++) {
+                if(B[row][col] == Blank)
+                    return false;
+            }
+        }
+        return true; // just to get it to compile
     }
+    
+    // The get scores methods are very poorly written -- clean them up perhaps?
+    // X = 1, O = 10
+    private int getScores(int a, int b, int c, int d, int e, int f, int g, int h) {
+        
+        int n = a + b + c + d + e + f + g + h;
+        int scoreMachine = n / 10;
+        int scoreHuman = n % 10;
+        if(scoreMachine > 0 && scoreHuman > 0)
+            return 0; // No moves left
+        else if(scoreHuman == 0)
+            return scoreMachine;
+        else if(scoreMachine == 0)
+            return -scoreHuman;
+        return 0; // needed to compile
+    }
+    
+    private int getScoresDiagonally(int a, int b, int c, int d) {
+    
+        int n = a + b + c + d;
+        int scoreMachine = n / 10;
+        int scoreHuman = n % 10;
+        if(scoreMachine > 0 && scoreHuman > 0)
+            return 0; // No moves left
+        else if(scoreHuman == 0)
+            return scoreMachine;
+        else if(scoreMachine == 0)
+            return -scoreHuman;
+        return 0; // needed to compile
+        
+    }
+    // The magic method
+    private int eval(int[][] B) {
+        
+        if(isWinFor(B, Human))
+            return -Inf;
+        else if(isWinFor(B, Machine))
+            return Inf;
+        
+        int sum = 0;
+        
+        // Count rows
+        for(int r = 0; r < 8; r++)
+            sum += getScores(B[r][0], B[r][1], B[r][2], B[r][3], B[r][4], B[r][5], B[r][6], B[r][7]);
+        
+        // Count columns
+        for(int c = 0; c < 8; c++)
+            sum += getScores(B[0][c], B[1][c], B[2][c], B[3][c], B[4][c], B[5][c], B[6][c], B[7][c]);
+        
+        /*
+        // Count diagonals
+        // check all lower-left to upper-right diagonals        
+        for(int i = 3; i < 8; ++i) {
+            for(int j = 0; j < 5; ++j) {
+                sum += getScoresDiagonally(B[i][j], B[i-1][j+1], B[i-2][j+2], B[i-3][j+3]);
+            }
+        }
+        
+        for(int i = 0; i < 5; ++i) {
+            for(int j = 0; j < 5; ++j) {
+                sum += getScoresDiagonally(B[i][j], B[i+1][j+1], B[i+2][j+2], B[i+3][j+3]);
+            }
+        }
+        */
+        sum += getScoresDiagonally(B[0][0], B[1][1], B[2][2], B[3][3]);
+        //sum += getScoresDiagonally(B[3][0], B[2]);
+        return sum;
+    }
+    
+    private int column(int move) {
+        return move % 8;
+    }
+    
+    private int row(int move) {
+        return move / 8;    
+    }
+    
+    // This move helper method will do all the heavy lifting
+    private int minMax(int[][] B, int depth, int alpha, int beta) {
+        //System.out.println("Minmax called");
+        if(isLeaf(B) || depth == D)
+            return eval(B);
+        else if(depth % 2 != 0) {
+             int val = -Inf;
+             for(int move = 0; move < 64; move++) {
+                 if(B[row(move)][column(move)] == Blank) { 
+                     
+                     B[row(move)][column(move)] = Machine;
+                     alpha = Math.max(alpha, val);
+                     if(beta < alpha) break;
+                     val = Math.max(val, minMax(B, depth + 1, alpha, beta ));
+                     B[row(move)][column(move)] = Blank;
+                 }
+             }
+             return val;
+             
+        } else {
+            
+            int val = Inf;
+            
+            for(int move = 0; move < 64; move++) {
+                
+                if(B[row(move)][column(move)] == 0) {   // move is available
+               
+                    B[row(move)][column(move)] = Human;       // make the move  
+                    beta = Math.min(beta, val);
+                    if(beta < alpha) break;
+                    val = Math.min( val, minMax(B, depth + 1, alpha, beta )); 
+               
+                    B[row(move)][column(move)] = Blank;       // undo the move and try next move    
+                }
+            }
+            return val; 
+        }
+    }
+        
+    
+    public int move(int[][] B) {
+        
+        int max = -Inf;
+        int bestMove = -1;
+        for(int move = 0; move < 64; move++) {
+            
+            if(B[row(move)][column(move)] == Blank) {
+                
+                B[row(move)][column(move)] = Machine;
+                
+                int val = minMax(B, 1, -Inf, Inf);
+                if(val > max) {
+                    bestMove = move;  
+                    max = val;
+                }
+                
+                B[row(move)][column(move)] = Blank; // undo move
+            }
+        }
+        return bestMove;
+    }  
+        /*
+        int m = 0; 
+        do {
+            m = R.nextInt(8);
+        } while(B[0][m] != 0);
+        
+        return m; 
+    }
+    */
+    
 }
+
