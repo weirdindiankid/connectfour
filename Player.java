@@ -158,43 +158,52 @@ public class Player {
     }
     
     // This move helper method will do all the heavy lifting
-    private int minMax(int[][] B, int depth, int alpha, int beta) {
+    private int minMax(int[][] B, int depth) {
         //System.out.println("Minmax called");
         if(isLeaf(B) || depth == D)
             return eval(B);
         else if(depth % 2 == 0) {
              int val = -Inf;
-             for(int r = 0; r < 8; r++) {
-                 for(int c = 0; c < 8; c++) {
-                     if(B[r][c] == Blank) { 
-                         
-                         B[r][c] = Machine;
-                         alpha = Math.max(alpha, val);
-                         if(beta < alpha) break;
-                         val = Math.max(val, minMax(B, depth + 1, alpha, beta ));
-                         B[r][c] = Blank;
-                     }
-                 }
+             
+             for(int c = 0; c < 8; c++) {
+                 int row = 0;
+                 if(B[row][c] != Blank)
+                     continue; 
+                 while(row < 8 && B[row][c] == 0) {
+                     ++row;
+                 } 
+                 --row;
+                 B[row][c] = Machine;
+                 //alpha = Math.max(alpha, val);
+                 //if(beta < alpha) break;
+                 val = Math.max(val, minMax(B, depth + 1));
+                 B[row][c] = Blank;
+                 
              }
+             
              return val;
              
         } else {
             
             int val = Inf;
             
-            for(int r = 0; r < 8; r++) {
-                for(int c =0; c < 8; c++) {
-                    if(B[r][c] == 0) {   // move is available
-                        
-                        B[r][c] = Human;       // make the move  
-                        beta = Math.min(beta, val);
-                        if(beta < alpha) break;
-                        val = Math.min( val, minMax(B, depth + 1, alpha, beta )); 
-                        
-                        B[r][c] = Blank;       // undo the move and try next move    
-                    }
-                }
+            
+            for(int c =0; c < 8; c++) {
+                int row = 0;
+                if(B[row][c] != Blank)
+                    continue;
+                while(row < 8 && B[row][c] == 0) {
+                    ++row;
+                    System.out.println("Row is: " + row);
+                } 
+                --row;
+                 B[row][c] = Human;
+              
+                 val = Math.min( val, minMax(B, depth + 1)); 
+                 B[row][c] = Blank;       // undo the move and try next move    
+                 
             }
+            
             return val; 
         }
     }
@@ -204,23 +213,30 @@ public class Player {
         
         int max = -Inf;
         int bestMove = -1;
-        for(int r = 0; r < 8; r++) {
-            for(int c = 0; c < 8; c++) {
-                System.out.println("Now on: B[" + r + "][" + c + "]");
-                if(B[r][c] == Blank) {
-                    
-                    B[r][c] = Machine;
-                    
-                    int val = minMax(B, 1, -Inf, Inf);
-                    if(val > max) {
-                        bestMove = B[r][c];  
-                        max = val;
-                    }
-                    
-                    B[r][c] = Blank; // undo move
-                }
+        for(int c = 0; c < 8; c++) {
+            
+            int row = 0;
+            if(B[row][c] != Blank) {
+                continue;
             }
+            while(B[row][c] == 0) {
+                ++row;
+            }
+            --row;
+            //System.out.println("Now on: B[" + r + "][" + c + "]");
+                 
+            B[row][c] = Machine;
+            int val = minMax(B, 1);
+            
+            if(val > max) {
+                bestMove = c;  
+                max = val;
+            }
+            
+            B[row][c] = Blank; // undo move
+            
         }
+        
         return bestMove;
     }  
         /*
