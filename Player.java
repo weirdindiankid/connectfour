@@ -19,7 +19,7 @@ public class Player {
     private final int Inf = 1000000;
     
     // This will be the depth our program will look up to
-    private final int D = 8;
+    private final int D = 4;
     
     // Method borrowed from Connect4.java, code by Professor Snyder
     // Check to see if the game is a win for the given player
@@ -129,7 +129,7 @@ public class Player {
         for(int c = 0; c < 8; c++)
             sum += getScores(B[0][c], B[1][c], B[2][c], B[3][c], B[4][c], B[5][c], B[6][c], B[7][c]);
         
-        /*
+        
         // Count diagonals
         // check all lower-left to upper-right diagonals        
         for(int i = 3; i < 8; ++i) {
@@ -143,8 +143,8 @@ public class Player {
                 sum += getScoresDiagonally(B[i][j], B[i+1][j+1], B[i+2][j+2], B[i+3][j+3]);
             }
         }
-        */
-        sum += getScoresDiagonally(B[0][0], B[1][1], B[2][2], B[3][3]);
+        
+        //sum += getScoresDiagonally(B[0][0], B[1][1], B[2][2], B[3][3]);
         //sum += getScoresDiagonally(B[3][0], B[2]);
         return sum;
     }
@@ -194,7 +194,7 @@ public class Player {
                     continue;
                 while(row < 8 && B[row][c] == 0) {
                     ++row;
-                    System.out.println("Row is: " + row);
+                    //System.out.println("Row is: " + row);
                 } 
                 --row;
                  B[row][c] = Human;
@@ -219,7 +219,7 @@ public class Player {
             if(B[row][c] != Blank) {
                 continue;
             }
-            while(B[row][c] == 0) {
+            while(row < 8 && B[row][c] == 0) {
                 ++row;
             }
             --row;
