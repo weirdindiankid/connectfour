@@ -12,6 +12,7 @@ public class Player {
     
     // Scores array
     int [] scores = new int[8];
+    int [] rowScores = new int[8];
     
     public int move(int[][] B) {
         //System.out.println("\t\t\t\t\t\tmove");
@@ -26,7 +27,7 @@ public class Player {
         return B[row][0] != 0;   
     }
     
-    private static boolean rowEmpty(int[][] B, int row) { return !rowFull(B, row); }
+    private static boolean rowEmpty(int[][] B, int row) { return !rowFull(B, row);}
     
     private static boolean colEmpty(int[][] B, int col) {
         return B[7][col] == 0;
@@ -43,12 +44,34 @@ public class Player {
         //System.out.println("add B[" + row + "][" + col + "] = " + B[row][col]);
     }
     
+    private static void addRowChecker(int[][] B, int row, int player) {
+        int col = 0;
+        while(col < 8 && B[row][col] == 0) {
+            ++col;
+        }
+        --col;
+        
+        B[row][col] = player;
+        //System.out.println("add B[" + row + "][" + col + "] = " + B[row][col]);
+    }
+    
     private static void removeChecker(int[][] B, int col) {
-        int row = 7;
-        while(row >= 0 && B[row][col] != 0) {
+        int row = 8;
+        while(row > 0 && B[row][col] != 0) {
             --row;
         }
         ++row;
+        
+        B[row][col] = 0;
+        //System.out.println("remove B[" + row + "][" + col + "] = " + B[row][col]);
+    }
+
+    private static void removeRowChecker(int[][] B, int row) {
+        int col = 7;
+        while(col >= 0 && B[row][col] != 0) {
+            --col;
+        }
+        ++col;
         
         B[row][col] = 0;
         //System.out.println("remove B[" + row + "][" + col + "] = " + B[row][col]);
@@ -67,13 +90,11 @@ public class Player {
         
 
         int[] colScore = new int[8];
-        int[] rowScore = new int[8];
-        
         for(int i = 0; i < 8; i++) {
             //System.out.println(i);
             if( colFull(B, i) ) {
                 colScore[i] = -1;
-            } else if(rowFull(B, i)) { }
+            }
             else if(checkWin(B, MACHINE)) {
                 //System.out.println("Machine win");
                 colScore[i] = 100;
@@ -106,6 +127,58 @@ public class Player {
         }
 
         return colScore;
+    }
+    
+    private int[] getRowScores(int[][] B, int player, int depth) {
+        int other;
+        if( player == HUMAN ) {
+            //System.out.println("HUMAN");
+            other = MACHINE;
+        }
+        else {
+            //System.out.println("MACHINE");
+            other = HUMAN;
+        }
+        
+
+        int[] rowScore = new int[8];
+        for(int i = 0; i < 8; i++) {
+            //System.out.println(i);
+            if( rowFull(B, i) ) {
+                rowScore[i] = -1;
+            }
+            else if(checkWin(B, MACHINE)) {
+                //System.out.println("Machine win");
+                rowScore[i] = 100;
+            } else if(checkWin(B, HUMAN)) {
+                //System.out.println("Human win");
+                rowScore[i] = -100;
+            } else if(depth == 0) {
+                //System.out.println("Depth zero");
+                rowScore[i] = 0;
+            } else if (player == MACHINE) {
+                //System.out.println("Machine turn");
+                addRowChecker(B, i, player);
+                int[] humanScores = getRowScores(B, other, depth - 1);
+                //System.out.println(depth);
+                //System.out.print("humanScores = ");
+                //printArray(humanScores);
+                rowScore[i] = min( humanScores );
+                removeRowChecker(B, i);
+            } else { // player == HUMAN
+                //System.out.println("User turn");
+                addRowChecker(B, i, player);
+                int [] machineScores = getRowScores(B, other, depth - 1);
+                //System.out.println(depth);
+                //System.out.print("machineScores = ");
+                //printArray(machineScores);
+                rowScore[i] = max( machineScores );
+                removeRowChecker(B, i);
+            }
+            
+        }
+
+        return rowScore;
     }
     
     private int min(int [] a) {
@@ -148,8 +221,11 @@ public class Player {
     // 1 = human, 10 = machine
     private int moveHelper(int[][] B, int player, int depth) {
         scores = getScores(B, player, depth);
+        rowScores = getRowScores(B, player, depth);
+        int[] totalScores = new int[8];
+        for(int i = 0; i < 8; i++) { totalScores[i] = scores[i] + rowScores[i]; }
         //printArray(scores);
-        int maxScore = maxIndex(scores);
+        int maxScore = maxIndex(totalScores);
         return maxScore;
         
     }
