@@ -164,14 +164,16 @@ public class Player {
             return eval(B);
         else if(depth % 2 == 0) {
              int val = -Inf;
-             for(int move = 0; move < 64; move++) {
-                 if(B[row(move)][column(move)] == Blank) { 
-                     
-                     B[row(move)][column(move)] = Machine;
-                     alpha = Math.max(alpha, val);
-                     if(beta < alpha) break;
-                     val = Math.max(val, minMax(B, depth + 1, alpha, beta ));
-                     B[row(move)][column(move)] = Blank;
+             for(int r = 0; r < 8; r++) {
+                 for(int c = 0; c < 8; c++) {
+                     if(B[r][c] == Blank) { 
+                         
+                         B[r][c] = Machine;
+                         alpha = Math.max(alpha, val);
+                         if(beta < alpha) break;
+                         val = Math.max(val, minMax(B, depth + 1, alpha, beta ));
+                         B[r][c] = Blank;
+                     }
                  }
              }
              return val;
@@ -180,16 +182,17 @@ public class Player {
             
             int val = Inf;
             
-            for(int move = 0; move < 64; move++) {
-                
-                if(B[row(move)][column(move)] == 0) {   // move is available
-               
-                    B[row(move)][column(move)] = Human;       // make the move  
-                    beta = Math.min(beta, val);
-                    if(beta < alpha) break;
-                    val = Math.min( val, minMax(B, depth + 1, alpha, beta )); 
-               
-                    B[row(move)][column(move)] = Blank;       // undo the move and try next move    
+            for(int r = 0; r < 8; r++) {
+                for(int c =0; c < 8; c++) {
+                    if(B[r][c] == 0) {   // move is available
+                        
+                        B[r][c] = Human;       // make the move  
+                        beta = Math.min(beta, val);
+                        if(beta < alpha) break;
+                        val = Math.min( val, minMax(B, depth + 1, alpha, beta )); 
+                        
+                        B[r][c] = Blank;       // undo the move and try next move    
+                    }
                 }
             }
             return val; 
