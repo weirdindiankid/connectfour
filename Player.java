@@ -242,7 +242,7 @@ public class Player {
         
         // This is a temporary fix for the array index out of bounds error
         if(bestMove < 0) {
-            System.out.println("Triggered bestMove = -1");
+            //System.out.println("Triggered bestMove = -1");
             int m = 0; 
             do {
                 m = R.nextInt(8);
