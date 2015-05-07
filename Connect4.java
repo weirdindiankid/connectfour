@@ -260,7 +260,7 @@ public class Connect4 {
           }
           //System.out.println(j); 
           int r = 0;
-          //if(r < 0) { r= 0; } else if(j < 0) { j = 0;}
+          //if(r < 0) { r= 0; } else if(j < 0) { ++j;}
           while(r < 8 && r >= 0 && slot[r][j] == 0) {
              slot[r][j] = bluePlayer;                  
              slotButton[r][j].setBackground(normal[bluePlayer]); 

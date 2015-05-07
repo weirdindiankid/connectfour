@@ -19,7 +19,7 @@ public class Player {
     private final int Inf = 1000000;
     
     // This will be the depth our program will look up to
-    private final int D = 9;
+    private final int D = 8;
     
     // Method borrowed from Connect4.java, code by Professor Snyder
     // Check to see if the game is a win for the given player
@@ -162,7 +162,7 @@ public class Player {
         //System.out.println("Minmax called");
         if(isLeaf(B) || depth == D)
             return eval(B);
-        else if(depth % 2 != 0) {
+        else if(depth % 2 == 0) {
              int val = -Inf;
              for(int move = 0; move < 64; move++) {
                  if(B[row(move)][column(move)] == Blank) { 
@@ -201,19 +201,21 @@ public class Player {
         
         int max = -Inf;
         int bestMove = -1;
-        for(int move = 0; move < 64; move++) {
-            
-            if(B[row(move)][column(move)] == Blank) {
-                
-                B[row(move)][column(move)] = Machine;
-                
-                int val = minMax(B, 1, -Inf, Inf);
-                if(val > max) {
-                    bestMove = move;  
-                    max = val;
+        for(int r = 0; r < 8; r++) {
+            for(int c = 0; c < 8; c++) {
+                System.out.println("Now on: B[" + r + "][" + c + "]");
+                if(B[r][c] == Blank) {
+                    
+                    B[r][c] = Machine;
+                    
+                    int val = minMax(B, 1, -Inf, Inf);
+                    if(val > max) {
+                        bestMove = B[r][c];  
+                        max = val;
+                    }
+                    
+                    B[r][c] = Blank; // undo move
                 }
-                
-                B[row(move)][column(move)] = Blank; // undo move
             }
         }
         return bestMove;
