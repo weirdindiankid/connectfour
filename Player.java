@@ -22,6 +22,12 @@ public class Player {
         return B[0][col] != 0;
     }
     
+    private static boolean rowFull(int[][] B, int row) {
+        return B[row][0] != 0;   
+    }
+    
+    private static boolean rowEmpty(int[][] B, int row) { return !rowFull(B, row); }
+    
     private static boolean colEmpty(int[][] B, int col) {
         return B[7][col] == 0;
     }
@@ -61,11 +67,13 @@ public class Player {
         
 
         int[] colScore = new int[8];
+        int[] rowScore = new int[8];
+        
         for(int i = 0; i < 8; i++) {
             //System.out.println(i);
             if( colFull(B, i) ) {
                 colScore[i] = -1;
-            }
+            } else if(rowFull(B, i)) { }
             else if(checkWin(B, MACHINE)) {
                 //System.out.println("Machine win");
                 colScore[i] = 100;
