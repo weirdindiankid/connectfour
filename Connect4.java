@@ -1,7 +1,6 @@
 /* Title:  Connect4.java
- * Authors: Tyrone Hou <tyroneh@bu.edu>
- *          Dharmesh Tarapore <dharmesh@bu.edu>
- * Date: 4/29/15
+ * Author: Wayne Snyder (waysnyder@gmail.com)
+ * Date: 4/19/12
  * Purpose: This is a driver program for a Connect4 program for CS 112
  * Uses: method move() from class Player
  */    
@@ -260,7 +259,7 @@ public class Connect4 {
           }
           //System.out.println(j); 
           int r = 0;
-          //if(r < 0) { r= 0; } else if(j < 0) { ++j;}
+          
           while(r < 8 && r >= 0 && slot[r][j] == 0) {
              slot[r][j] = bluePlayer;                  
              slotButton[r][j].setBackground(normal[bluePlayer]); 
