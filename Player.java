@@ -239,13 +239,13 @@ public class Player {
                 max = val;
             }
             
-            System.out.println("Best Move: " + bestMove);
+            //System.out.println("Best Move: " + bestMove);
             B[row][c] = Blank; // undo move
             
         }
         
         //printBoard(B);
-        System.out.println();
+        //System.out.println();
         return bestMove;
     }
     
